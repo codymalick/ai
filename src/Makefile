@@ -5,6 +5,12 @@ all: ai_mc clean
 
 ai_mc: main.o world.o alg.o
 	$(CC) main.o world.o alg.o -o ai_mc
+
+worldtest: wtest.o world.o
+	$(CC) wtest.o world.o -o wtest
+
+wtest.o: wtest.cpp
+	$(CC) wtest.cpp -c $(CFLAGS)
 	
 main.o: main.cpp
 	$(CC) main.cpp -c $(CFLAGS)
