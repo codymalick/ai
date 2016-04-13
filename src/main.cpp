@@ -10,7 +10,7 @@
 #include <cstring>
 
 //#include "world.h"
-//#include "alg.h"
+#include "alg.h"
 
 using std::cout;
 using std::endl;
@@ -34,16 +34,13 @@ int main(int argc, char *argv[]) {
     if(!strcmp(mode, "bfs")) {
         cout << "Running Breadth-First-Search" << endl;
         //bfs();
-    }
-    if(!strcmp(mode, "dfs")) {
+    } else if(!strcmp(mode, "dfs")) {
         cout << "Running Depth-First Search" << endl;
         //dfs();
-    }
-    if(!strcmp(mode, "iddfs")) {
+    } else if(!strcmp(mode, "iddfs")) {
         cout << "Running Iterative Deepening Depth-First Search" << endl;
         //iddfs();
-    }
-    if(!strcmp(mode, "astar")) {
+    } else if(!strcmp(mode, "astar")) {
         cout << "Running A-Star Search" << endl;
         //astar();
     } else {
