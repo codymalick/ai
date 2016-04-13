@@ -1,12 +1,8 @@
 #ifndef _WORLD
 #define _WORLD
 
-#include <iostream>
-
-#define NUM_M 3
-#define NUM_C 3
-#define NUM_TOTAL NUM_C+NUM_M
 #define BOAT_CAP 2
+#include <iostream>
 
 enum Person {
     CANNIBAL,
@@ -29,24 +25,31 @@ enum Side {
 
 class World {
     public:
-        World();
-        int count(Location, Person);
-        int count(Side, Person);
-        int is_legal_move(Person, Location, Location);
-        void move(Person, Location, Location);
-        bool boat_can_move();
-        void boat_move();
+        World(int, int, int, int, Side);
+        World(const World&);
+        ~World();
         
+        int count(Side, Person) const;
+        int is_legal_move(Person, Location, Location) const;
+        void move(Person, Location, Location);
+        bool boat_can_move() const;
+        void boat_move();
+        bool fail() const;
+        
+        bool operator==(const World&) const;
         friend std::ostream& operator<<(std::ostream&, const World&);
         
     private:
-        Person left[NUM_TOTAL];
-        Person right[NUM_TOTAL];
-        Person boat[BOAT_CAP];
+        int num_m;
+        int num_c;
+        Person *left;
+        Person *right;
+        Person *boat;
         Side boat_side;
         
-        Person* field_addr(Location);
-        int field_len(Location);
+        int count(Location, Person) const;
+        Person* field_addr(Location) const;
+        int field_len(Location) const;
 };
 
 #endif

@@ -6,7 +6,7 @@ using std::endl;
 
 int main() {
     cout << "Initialize world." << endl;
-    World w;
+    World w(3,2,0,1, LEFT_SIDE);
     cout << w << endl;
    
     cout << "Move missionary to boat." << endl; 

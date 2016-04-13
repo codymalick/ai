@@ -1,5 +1,6 @@
 CC=clang++
 CFLAGS=-g -Wall
+# TODO: Build directory
 
 all: ai_mc clean
 
@@ -7,7 +8,8 @@ ai_mc: main.o world.o alg.o
 	$(CC) main.o world.o alg.o -o ai_mc
 
 worldtest: wtest.o world.o
-	$(CC) wtest.o world.o -o wtest
+	$(CC) wtest.o world.o -o worldtest
+
 
 wtest.o: wtest.cpp
 	$(CC) wtest.cpp -c $(CFLAGS)
@@ -20,6 +22,7 @@ world.o: world.h world.cpp
 	
 alg.o: alg.h alg.cpp
 	$(CC) alg.cpp -c $(CFLAGS)
+
 
 clean:
 	rm -f *.o

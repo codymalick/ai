@@ -2,19 +2,62 @@
 #include <iostream>
 #include <assert.h>
 
-World::World() {
-    for(int i=0; i<NUM_TOTAL; i++) {
-        left[i] = (i<NUM_M)?MISSIONARY:CANNIBAL;
-        right[i] = NOBODY;
+World::World(int m_left, int c_left, int m_right, int c_right, Side boat_side) {
+    // Set metadata
+    num_m = m_left + m_right;
+    num_c = c_left + c_right;
+    this->boat_side = boat_side;
+    
+    // allocate locations
+    left = new Person[num_m+num_c];
+    right = new Person[num_m+num_c];
+    boat = new Person[BOAT_CAP];
+    
+    // populate
+    for(int i=0; i<num_m+num_c; i++) {
+        if(i<m_left+c_left) {
+            left[i] = (i<m_left)?MISSIONARY:CANNIBAL;
+        } else {
+            left[i] = NOBODY;
+        }
+        
+        if(i<m_right+c_right) {
+            right[i] = (i<m_right)?MISSIONARY:CANNIBAL;
+        } else {
+            right[i] = NOBODY;
+        }
     }
 
     for(int i=0; i<BOAT_CAP; i++)
         boat[i] = NOBODY;
-    
-    boat_side = LEFT_SIDE;
 }
 
-int World::count(Location location, Person type) {
+World::World(const World& w) {
+    // Set metadata
+    num_m = w.num_m;
+    num_c = w.num_c;
+    boat_side = w.boat_side;
+    
+    // allocate locations
+    left = new Person[num_m+num_c];
+    right = new Person[num_m+num_c];
+    boat = new Person[BOAT_CAP];
+    
+    // copy values
+    for(int i=0; i<num_m+num_c; i++) {
+        left[i] = w.left[i];
+        right[i] = w.right[i];
+        boat[i] = w.boat[i];
+    }
+}
+
+World::~World() {
+    delete left;
+    delete right;
+    delete boat;
+}
+
+int World::count(Location location, Person type) const {
     Person * set = field_addr(location);
     int count = field_len(location);
     int sum = 0;
@@ -26,7 +69,7 @@ int World::count(Location location, Person type) {
     return sum;
 }
 
-int World::count(Side side, Person type) {
+int World::count(Side side, Person type) const {
     int sum;
     
     if(side == LEFT_SIDE) {
@@ -42,7 +85,7 @@ int World::count(Side side, Person type) {
 }
     
 // TODO: throw exception?
-int World::is_legal_move(Person type, Location from, Location to) {
+int World::is_legal_move(Person type, Location from, Location to) const {
     if((from != BOAT && to != BOAT) || from == to) return -1; // Must include boat
     if(((boat_side == LEFT_SIDE) && (from == RIGHT_SHORE || to == RIGHT_SHORE)) || \
        ((boat_side == RIGHT_SIDE) && (from == LEFT_SHORE || to == LEFT_SHORE)))
@@ -78,7 +121,7 @@ void World::move(Person type, Location from, Location to) {
         }
 }
 
-bool World::boat_can_move() {
+bool World::boat_can_move() const {
     return (count(BOAT, NOBODY) < BOAT_CAP);
 }
 
@@ -87,7 +130,12 @@ void World::boat_move() {
     boat_side = (boat_side == LEFT_SIDE)?RIGHT_SIDE:LEFT_SIDE;
 }
 
-Person* World::field_addr(Location location) {
+bool World::fail() const {
+    return (count(LEFT_SIDE, CANNIBAL)  > count(LEFT_SIDE, MISSIONARY) ||
+            count(RIGHT_SIDE, CANNIBAL) > count(RIGHT_SIDE, MISSIONARY));
+}
+
+Person* World::field_addr(Location location) const {
     switch (location) {
         case LEFT_SHORE:
             return left;
@@ -98,16 +146,27 @@ Person* World::field_addr(Location location) {
     }
 }
 
-int World::field_len(Location location) {
+int World::field_len(Location location) const {
     switch (location) {
         case LEFT_SHORE:
         case RIGHT_SHORE:
-            return NUM_TOTAL;
+            return num_m+num_c;
         case BOAT:
             return BOAT_CAP;
     }
 }
 
+bool World::operator==(const World& w) const {
+    return ( // Right shore not included for efficiency; mathematically irrelevant
+        (count(LEFT_SHORE, MISSIONARY) == w.count(LEFT_SHORE, MISSIONARY))  &&
+        (count(BOAT, MISSIONARY)       == w.count(BOAT, MISSIONARY))        &&
+        
+        (count(LEFT_SHORE, CANNIBAL)   == w.count(LEFT_SHORE, CANNIBAL))    &&
+        (count(BOAT, CANNIBAL)         == w.count(BOAT, CANNIBAL))
+    );
+}
+    
+    
 std::ostream& operator<<(std::ostream& os, const Person& person) {
     switch(person) {
         case MISSIONARY:
@@ -126,11 +185,11 @@ std::ostream& operator<<(std::ostream& os, const Person& person) {
 
 std::ostream& operator<<(std::ostream& os, const World& world) {
     os << "[_";
-    for (int i=0; i<NUM_TOTAL; i++) os << world.left[i];
+    for (int i=0; i<world.num_m+world.num_c; i++) os << world.left[i];
     os << (world.boat_side == LEFT_SIDE?"_,|":"_,    |");
     for (int i=0; i<BOAT_CAP; i++) os << world.boat[i];
     os << (world.boat_side == LEFT_SIDE?"|    ,_":"|,_");
-    for (int i=0; i<NUM_TOTAL; i++) os << world.right[i];
+    for (int i=0; i<world.num_m+world.num_c; i++) os << world.right[i];
     os << "_]";
     return os;
 }
