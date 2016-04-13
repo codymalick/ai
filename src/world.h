@@ -32,6 +32,7 @@ class World {
         int count(Side, Person) const;
         int is_legal_move(Person, Location, Location) const;
         void move(Person, Location, Location);
+        Side get_boat_side() const { return boat_side; }
         bool boat_can_move() const;
         void boat_move();
         bool fail() const;
