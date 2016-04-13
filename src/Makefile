@@ -4,8 +4,8 @@ CFLAGS=-g -Wall
 
 all: ai_mc clean
 
-ai_mc: main.o world.o alg.o
-	$(CC) main.o world.o alg.o -o ai_mc
+ai_mc: main.o world.o alg.o aux.o
+	$(CC) main.o world.o alg.o aux.o -o ai_mc
 
 worldtest: wtest.o world.o
 	$(CC) wtest.o world.o -o worldtest
@@ -22,6 +22,9 @@ world.o: world.h world.cpp
 	
 alg.o: alg.h alg.cpp
 	$(CC) alg.cpp -c $(CFLAGS)
+
+aux.o: aux.h aux.cpp
+	$(CC) aux.cpp -c $(CFLAGS)
 
 
 clean:

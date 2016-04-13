@@ -9,16 +9,14 @@
 #include <fstream>
 #include <cstring>
 
-//#include "world.h"
+#include "world.h"
 #include "alg.h"
+#include "aux.h"
 
 using std::cout;
 using std::endl;
 using std::cerr;
 
-int flag_check(int argc, char *argv[]);
-
-#define USAGE "Use: ai_mc <initial state file> <goal state file> <mode> <output file>"
 
 int main(int argc, char *argv[]) {
 
@@ -53,37 +51,3 @@ int main(int argc, char *argv[]) {
     
     exit(0);
 }
-
-int flag_check(int argc, char *argv[])
-{
-    //debug mode
-    if(argc == 2 && strcmp(argv[1], "-d")) {
-        return 0;
-    }
-    // Check argument count is correct
-    if(argc !=   4) {
-        cout << "Invalid number of arguments" << endl;
-        cout << USAGE << endl;
-        return 1;
-    }
-    
-    // Check initial state file is valid
-    if(!std::ifstream(argv[1])) {
-        cout << "Initial State file invalid" << endl;
-        return 1;
-    }
-    
-    // Check goal state file
-    if(!std::ifstream(argv[2])) {
-        cout << "Goal State file invalid" << endl;
-        return 1;
-    }
-    
-    // Check mode
-    
-    // Check output? Do we need to check or just assume overwrite behavior?
-    
-    // Success
-    return 0;
-}
-
