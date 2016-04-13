@@ -28,4 +28,4 @@ aux.o: aux.h aux.cpp
 
 
 clean:
-	rm -f *.o
+	rm -f *.o ai_mc worldtest
