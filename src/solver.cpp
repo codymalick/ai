@@ -4,6 +4,7 @@
 Node::Node(Node* parent, World* val) {
     this->val = val;
     this->parent = parent;
+    child_count = 0;
     child = (Node**) NULL;
 }
 
@@ -21,7 +22,7 @@ Solver::Solver(World* start, World* end) {
 
 void Solver::bfs() {
     queue = new BfsQueue;
-    // visited = new unordered_map<tuple<int, int, Side>, bool>;
+    visited = new unordered_map<int[5], bool>;
     expanded = 0;
     if(*(tree->val) == *end_state) {
         solution = tree;
@@ -44,8 +45,8 @@ void Solver::bfs() {
             solution = n;
             return;
         }
+        // tracking number of expanded nodes
         expanded++;
-        
         
         // generate successors
         // one missionary to boat
@@ -92,13 +93,33 @@ void Solver::bfs() {
             }
         }
         
+        // Move the boat
+        if(n->val->boat_can_move()) {
+            temp = new World(*(n->val));
+            temp->boat_move();
+            succ.push_back(new Node(n, temp));
+        }
         
-        // remove failure states
-        for(std::vector<Node*>::iterator it = succ.begin(); it < succ.end(); ++it)
-            if((*it)->val->fail()) {
-                delete *it;
-                it = succ.erase(it);
-            }
+        // Move first person out of boat
+        if(n->val->boat_at(0) != NOBODY) {
+            temp = new World(*(n->val));
+            temp->move(temp->boat_at(0), BOAT, temp->boat_closest());
+            succ.push_back(new Node(n, temp));
+        }
+        
+        // Move second person out of boat
+        if(n->val->boat_at(1) != NOBODY) {
+            temp = new World(*(n->val));
+            temp->move(temp->boat_at(0), BOAT, temp->boat_closest());
+            succ.push_back(new Node(n, temp));
+        }
+        // Move both out of boat
+        if(n->val->boat_at(0) != NOBODY && n->val->boat_at(1) != NOBODY) {
+            temp = new World(*(n->val));
+            temp->move(temp->boat_at(0), BOAT, temp->boat_closest());
+            temp->move(temp->boat_at(1), BOAT, temp->boat_closest());
+            succ.push_back(new Node(n, temp));
+        }
         
         // put successor nodes into tree
         n->child_count = succ.size();
@@ -109,14 +130,10 @@ void Solver::bfs() {
         
         succ.clear();
         
-        // put child nodes into queue, checking for solution
-        for(int i=0; i<n->child_count; i++) {
-            if(*(n->child[i]->val) == *end_state) {
-                solution = n->child[i];
-                return;
-            }
-            queue->push(n->child[i]);
-        }
+        // put child nodes into queue if not failure state
+        for(int i=0; i<n->child_count; i++)
+            if(!(n->child[i]->val->fail()))
+                queue->push(n->child[i]);
     }
 }
         

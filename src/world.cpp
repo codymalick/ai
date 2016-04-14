@@ -74,6 +74,11 @@ int World::count(Location location, Person type) const {
     return sum;
 }
 
+Person World::boat_at(int i) {
+    assert(i>-1 && i < BOAT_CAP);
+    return boat[i];
+}
+
 int World::count(Side side, Person type) const {
     int sum;
     

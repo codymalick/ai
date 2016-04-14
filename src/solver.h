@@ -41,7 +41,7 @@ class Solver {
         Node *solution;
         World *end_state;
         AlgQueue *queue;
-        //unordered_map<tuple<int, int, Side>, bool>* visited;
+        unordered_map<int[5], bool>* visited;
         int expanded; // total expanded nodes
 };
 

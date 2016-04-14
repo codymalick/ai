@@ -30,6 +30,7 @@ class World {
         ~World();
         
         int count(Side, Person) const;
+        Person boat_at(int);
         bool is_legal_move(Person, Location, Location) const;
         void move(Person, Location, Location);
         inline Side get_boat_side() const { return boat_side; }
