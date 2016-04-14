@@ -3,8 +3,11 @@
 
 #define USAGE "Use: ai_mc <initial state file> <goal state file> <mode> <output file>"
 
-int flag_check(int argc, char *argv[]);
-char* read_file(char *file[]);
-//*int read_goal(char *goal_file[]);
+#include "world.h"
+#include <string>
+
+int flag_check(int, char **);
+std::string read_file(char **);
+World* world_from_string(std::string);
 
 #endif

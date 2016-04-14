@@ -7,15 +7,18 @@
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
+#include <string>
 #include <cstring>
 
 #include "world.h"
 #include "alg.h"
 #include "aux.h"
+#include "solver.h"
 
 using std::cout;
 using std::endl;
 using std::cerr;
+using std::string;
 
 
 int main(int argc, char *argv[]) {
@@ -26,7 +29,21 @@ int main(int argc, char *argv[]) {
     if(flag_check(argc, argv))
         exit(1);
     
-    char *mode = argv[3];
+    Solver* solver;
+    
+    {
+        string start_string = read_file(&argv[1]);
+        string goal_string = read_file(&argv[2]);
+        
+        cout << "Creating worlds..." << endl;
+        World* w1 = world_from_string(start_string);
+        World* w2 = world_from_string(goal_string);
+        
+        cout << "Creating solver..." << endl;
+        solver = new Solver(w1, w2);
+    }
+    
+    const char *mode = argv[3];
     //Enum names defined by assignment requirements
     
     if(!strcmp(mode, "bfs")) {
@@ -39,15 +56,15 @@ int main(int argc, char *argv[]) {
         cout << "Running Iterative Deepening Depth-First Search" << endl;
         //iddfs();
     } else if(!strcmp(mode, "astar")) {
-        cout << "Running A-Star Search" << endl;
+        cout << "Running A* Search" << endl;
         //astar();
     } else {
         cout << "Invalid mode" << endl;
         cout << USAGE << endl;
-        exit(1);
+        return 1;
     }
     
     
     
-    exit(0);
+    return 0;
 }

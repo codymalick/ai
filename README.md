@@ -1,1 +1,3 @@
-# ai
+Team:
+Andrew Tolvstad
+Cody Malick

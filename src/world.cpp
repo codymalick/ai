@@ -2,6 +2,7 @@
 #include <iostream>
 #include <assert.h>
 
+// Default constructor
 World::World(int m_left, int c_left, int m_right, int c_right, Side boat_side) {
     // Set metadata
     num_m = m_left + m_right;
@@ -32,6 +33,7 @@ World::World(int m_left, int c_left, int m_right, int c_right, Side boat_side) {
         boat[i] = NOBODY;
 }
 
+// Copy constructor
 World::World(const World& w) {
     // Set metadata
     num_m = w.num_m;
@@ -47,10 +49,13 @@ World::World(const World& w) {
     for(int i=0; i<num_m+num_c; i++) {
         left[i] = w.left[i];
         right[i] = w.right[i];
-        boat[i] = w.boat[i];
     }
+    
+    for(int i=0; i<BOAT_CAP; i++)
+        boat[i] = w.boat[i];
 }
 
+// Destructor
 World::~World() {
     delete left;
     delete right;

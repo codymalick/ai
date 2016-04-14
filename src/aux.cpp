@@ -2,20 +2,19 @@
 #include "world.h"
 
 #include <iostream>
-#include <cstring>
+#include <string>
 #include <fstream>
+#include <sstream>
 
 using std::cout;
 using std::endl;
+using std::stoi;
 
-int flag_check(int argc, char *argv[])
+int flag_check(int argc, char **argv)
 {
-    //debug mode
-    if(argc == 2 && strcmp(argv[1], "-d")) {
-        return 0;
-    }
+
     // Check argument count is correct
-    if(argc !=   4) {
+    if(argc !=   5) {
         cout << "Invalid number of arguments" << endl;
         cout << USAGE << endl;
         return 1;
@@ -33,21 +32,26 @@ int flag_check(int argc, char *argv[])
         return 1;
     }
     
-    // Check mode
-    
-    // Check output? Do we need to check or just assume overwrite behavior?
-    
     // Success
     return 0;
 }
 
-/* char* read_file(char *filename[]) {
-   char *source[];
-   std::getline(std::fstream(filename), source);
-   std::cout << source << std::endl;
+std::string read_file(char **filename) {
+    std::ifstream f(*filename);
+    std::string s((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    f.close();
     
-} */
+    return s;
+}
 
-World* world_from_string(const char* source) {
-    
+World* world_from_string(std::string s) {
+    // file arrangement is static, so we can expect things to be deterministic
+    // in location. Manually taking line 1[1-3] and line2[1-3] works
+    return new World(
+        s[0]-'0', // left missionary
+        s[6]-'0', // left cannibal
+        s[2]-'0', // right missionary
+        s[8]-'0', // right cannibal
+        (s[4]-'0' == 1)?LEFT_SIDE:RIGHT_SIDE
+    );
 }
