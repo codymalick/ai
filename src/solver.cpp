@@ -150,3 +150,15 @@ vector<World*> Solver::ascend() {
     
     return v;
 }
+
+namespace std {
+    template <> struct hash<int& [5]> {
+        std::size_t operator()(const int& [5] k) const {
+            std::size_t result = 0;
+            for(int i=0; i<5; i++)
+                result ^= std::hash<int>()(k[i]);
+                
+            return result;
+        }
+    };
+}

@@ -45,4 +45,10 @@ class Solver {
         int expanded; // total expanded nodes
 };
 
+namespace std {
+    template <> struct hash<int [5]> {
+        std::size_t operator()(const int& [5]) const;
+    };
+}
+
 #endif
