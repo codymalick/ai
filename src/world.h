@@ -30,9 +30,10 @@ class World {
         ~World();
         
         int count(Side, Person) const;
-        int is_legal_move(Person, Location, Location) const;
+        bool is_legal_move(Person, Location, Location) const;
         void move(Person, Location, Location);
-        Side get_boat_side() const { return boat_side; }
+        inline Side get_boat_side() const { return boat_side; }
+        inline Location boat_closest() const { return (boat_side == LEFT_SIDE)?LEFT_SHORE:RIGHT_SHORE; }
         bool boat_can_move() const;
         void boat_move();
         bool fail() const;

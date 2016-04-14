@@ -2,39 +2,47 @@
 #define _SOLVER
 
 #include "alg.h"
+class AlgQueue; // forward declaration for circular include
 #include "world.h"
 
 #include <vector>
+#include <tuple>
+#include <unordered_map>
 
 using std::vector;
+using std::tuple;
+using std::unordered_map;
 
 typedef void (*callback)(void); // function pointer type
 
-class AlgQueue; // forward declaration for circular include
 
 class Node {
     public:
         Node(Node*, World*);
         ~Node();
-        void enchild();
-    
-    private:
+        
         World *val;
         Node *parent;
-        
-        //Set of Children
         int child_count;
-        Node** child;
+        Node **child;
 };
 
 class Solver {
     public:
         Solver(World*, World*);
         // vector<World*> solve(AlgQueue*, callback);
+        void set_queue(AlgQueue*);
+        void bfs();
+        inline bool is_solved() { return (solution != NULL); }
+        vector<World*> ascend();
+        
     private:
         Node *tree;
-        World* end_state;
-        AlgQueue* queue;
+        Node *solution;
+        World *end_state;
+        AlgQueue *queue;
+        //unordered_map<tuple<int, int, Side>, bool>* visited;
+        int expanded; // total expanded nodes
 };
 
 #endif

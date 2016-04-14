@@ -90,15 +90,15 @@ int World::count(Side side, Person type) const {
 }
     
 // TODO: throw exception?
-int World::is_legal_move(Person type, Location from, Location to) const {
-    if((from != BOAT && to != BOAT) || from == to) return -1; // Must include boat
+bool World::is_legal_move(Person type, Location from, Location to) const {
+    if((from != BOAT && to != BOAT) || from == to) return false; // Must include boat
     if(((boat_side == LEFT_SIDE) && (from == RIGHT_SHORE || to == RIGHT_SHORE)) || \
        ((boat_side == RIGHT_SIDE) && (from == LEFT_SHORE || to == LEFT_SHORE)))
-        return -2; // boat on wrong side
-    if(count(from, type) < 1) return -3; // not enough people
-    if(count(to, NOBODY) < 1) return -4; // no room
+        return false; // boat on wrong side
+    if(count(from, type) < 1) return false; // not enough people
+    if(count(to, NOBODY) < 1) return false; // no room
     
-    return 1;
+    return true;
 }
 
 void World::move(Person type, Location from, Location to) {

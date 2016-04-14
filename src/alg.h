@@ -31,6 +31,7 @@ class BfsQueue : public AlgQueue {
         inline void push(Node* n) { data.push(n); }
         inline void push(Node* n, unsigned int p) { data.push(n); }
         inline Node* pop() {
+            if(data.size() < 1) return NULL;
             Node* n = data.front();
             data.pop();
             return n;
@@ -45,6 +46,7 @@ class DfsQueue : public AlgQueue {
         inline void push(Node* n) { data.push(n); }
         inline void push(Node* n, unsigned int p) { data.push(n); }
         inline Node* pop() {
+            if(data.size() < 1) return NULL;
             Node* n = data.top();
             data.pop();
             return n;
@@ -59,6 +61,7 @@ class AstarQueue : public AlgQueue {
         inline void push(Node* n) { data.push(std::forward_as_tuple(n, UINT_MAX)); }
         inline void push(Node* n, unsigned int p) { data.push(std::forward_as_tuple(n, p)); }
         inline Node* pop() {
+            if(data.size() < 1) return NULL;
             Node* n = std::get<0>(data.top());
             data.pop();
             return n;
