@@ -65,8 +65,6 @@ int Solver::depth(Node* n) {
 }
 
 bool Solver::solve(Algo algorithm, int depth_limit) {
-    assert(algorithm != BAD_ALG);
-    
     switch(algorithm) {
         case BFS:
             queue = new BfsQueue;
@@ -77,6 +75,9 @@ bool Solver::solve(Algo algorithm, int depth_limit) {
             break;
         case ASTAR:
             queue = new AstarQueue;
+            break;
+        case BAD_ALG:
+            return false;
     }
     
     expanded = 0;
