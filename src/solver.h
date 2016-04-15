@@ -7,11 +7,13 @@ class AlgQueue; // forward declaration for circular include
 
 #include <vector>
 #include <tuple>
-#include <unordered_map>
+#include <set>
 
 using std::vector;
 using std::tuple;
-using std::unordered_map;
+using std::set;
+// miss-left, can-left, miss-right, can-right, boat side
+typedef tuple<int, int, int, int, Side> signature;
 
 typedef void (*callback)(void); // function pointer type
 
@@ -30,25 +32,21 @@ class Node {
 class Solver {
     public:
         Solver(World*, World*);
-        // vector<World*> solve(AlgQueue*, callback);
+        ~Solver();
         void set_queue(AlgQueue*);
         void bfs();
         inline bool is_solved() { return (solution != NULL); }
         vector<World*> ascend();
+        inline int total_expanded() { return expanded; }
         
     private:
         Node *tree;
         Node *solution;
         World *end_state;
         AlgQueue *queue;
-        unordered_map<int[5], bool>* visited;
+        signature to_signature(World*);
+        set<signature>* visited;
         int expanded; // total expanded nodes
 };
-
-namespace std {
-    template <> struct hash<int [5]> {
-        std::size_t operator()(const int& [5]) const;
-    };
-}
 
 #endif

@@ -49,12 +49,6 @@ int main(int argc, char *argv[]) {
     if(!strcmp(mode, "bfs")) {
         cout << "Running Breadth-First-Search" << endl;
         solver->bfs();
-        if(solver->is_solved()) {
-            cout << "Solution found:" << endl;
-            state_vector_print(solver->ascend());
-        } else {
-            cout << "No solutions found :(" << endl;
-        }
     } else if(!strcmp(mode, "dfs")) {
         cout << "Running Depth-First Search" << endl;
         //dfs();
@@ -70,6 +64,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
+    if(solver->is_solved()) {
+        cout << "Solution found:" << endl;
+        state_vector_print(solver->ascend());
+    } else {
+        cout << "No solutions found :(" << endl;
+    }
+    
+    cout << "Total expanded nodes: " << solver->total_expanded() << endl;
+
     delete solver;
     
     return 0;

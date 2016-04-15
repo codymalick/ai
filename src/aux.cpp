@@ -61,6 +61,6 @@ World* world_from_string(string s) {
 }
 
 void state_vector_print(vector<World*> v) {
-    for(int i=0; i<v.size(); i++)
+    for(int i=v.size()-1; i>=0; i--)
         cout << *(v[i]) << endl;
 }

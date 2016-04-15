@@ -18,11 +18,28 @@ Solver::Solver(World* start, World* end) {
     end_state = end;
     queue = (AlgQueue*) NULL;
     solution = NULL;
+    visited = new set<signature>;
+}
+
+Solver::~Solver() {
+    delete visited;
+    if(queue) delete queue;
+    if(tree) delete tree;
+}
+
+signature Solver::to_signature(World* w) {
+    return std::make_tuple(
+        w->count(LEFT_SHORE, MISSIONARY),
+        w->count(LEFT_SHORE, CANNIBAL),
+        w->count(RIGHT_SHORE, MISSIONARY),
+        w->count(RIGHT_SHORE, CANNIBAL),
+        w->get_boat_side()
+    );
 }
 
 void Solver::bfs() {
     queue = new BfsQueue;
-    visited = new unordered_map<int[5], bool>;
+    
     expanded = 0;
     if(*(tree->val) == *end_state) {
         solution = tree;
@@ -34,13 +51,15 @@ void Solver::bfs() {
     vector<Node*> succ; // successors to current node
     Node* n;
     World* temp;
-    
     while(true) {
         // get next node
         n = queue->pop();
         if(!n) return; // no more nodes in queue
-        // -------- DEBUG PRINT --------
-        std::cout << *(n->val) << std::endl;
+         
+        // put into visited set
+        visited->insert(to_signature(n->val));
+        
+        
         if(*(n->val) == *end_state) {
             solution = n;
             return;
@@ -124,15 +143,14 @@ void Solver::bfs() {
         // put successor nodes into tree
         n->child_count = succ.size();
         n->child = new Node*[n->child_count];
-        
-        for(int i=0; i<succ.size(); i++)
+        for(int i=0; i<n->child_count; i++)
             n->child[i] = succ[i];
         
         succ.clear();
         
-        // put child nodes into queue if not failure state
+        // put child nodes into queue if not failure state or already seen
         for(int i=0; i<n->child_count; i++)
-            if(!(n->child[i]->val->fail()))
+            if(!(n->child[i]->val->fail()) && (visited->find(to_signature(n->child[i]->val)) == visited->end()))
                 queue->push(n->child[i]);
     }
 }
@@ -149,16 +167,4 @@ vector<World*> Solver::ascend() {
     }
     
     return v;
-}
-
-namespace std {
-    template <> struct hash<int& [5]> {
-        std::size_t operator()(const int& [5] k) const {
-            std::size_t result = 0;
-            for(int i=0; i<5; i++)
-                result ^= std::hash<int>()(k[i]);
-                
-            return result;
-        }
-    };
 }

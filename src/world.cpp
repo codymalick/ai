@@ -141,8 +141,9 @@ void World::boat_move() {
 }
 
 bool World::fail() const {
-    return (count(LEFT_SIDE, CANNIBAL)  > count(LEFT_SIDE, MISSIONARY) ||
-            count(RIGHT_SIDE, CANNIBAL) > count(RIGHT_SIDE, MISSIONARY));
+    return ((count(LEFT_SIDE, CANNIBAL)  > count(LEFT_SIDE, MISSIONARY) && count(LEFT_SIDE, MISSIONARY) > 0) ||
+            (count(RIGHT_SIDE, CANNIBAL) > count(RIGHT_SIDE, MISSIONARY) && count(RIGHT_SIDE, MISSIONARY) > 0)
+    );
 }
 
 Person* World::field_addr(Location location) const {
