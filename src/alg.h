@@ -16,6 +16,7 @@ class Node; // forward declaration for circular include
 //Parent class for algorithm data structures
 class AlgQueue {
     public:
+        virtual ~AlgQueue() = 0;
         inline virtual void push(Node*) = 0;
         inline virtual void push(Node*, unsigned int) = 0;
         inline virtual Node* pop() = 0;
@@ -26,6 +27,7 @@ class BfsQueue : public AlgQueue {
     private:
         std::queue<Node*, std::deque<Node*>> data;
     public:
+        ~BfsQueue();
         inline void push(Node* n) { data.push(n); }
         inline void push(Node* n, unsigned int p) { data.push(n); }
         inline Node* pop() {
@@ -41,6 +43,7 @@ class DfsQueue : public AlgQueue {
     private:
         std::stack<Node*, std::deque<Node*>> data;
     public:
+        ~DfsQueue();
         inline void push(Node* n) { data.push(n); }
         inline void push(Node* n, unsigned int p) { data.push(n); }
         inline Node* pop() {
@@ -50,16 +53,12 @@ class DfsQueue : public AlgQueue {
             return n;
         }
 };
+
 typedef std::tuple<Node*, unsigned int> prinode;
-/* const auto node_cmp = [](prinode a, prinode b) {
-    return std::get<1>(a) > std::get<1>(b);
-};*/
 
 class PrinodeComparator {
     public:
-        inline bool operator()(const prinode& a, const prinode& b) const {
-            return std::get<1>(a) > std::get<1>(b);
-        }
+        bool operator()(const prinode&, const prinode&) const;
 };
 
 // priority queue
@@ -68,6 +67,7 @@ class AstarQueue : public AlgQueue {
         //std::priority_queue<prinode, std::deque<prinode>, decltype(node_cmp)> data;
         std::priority_queue<prinode, std::deque<prinode>, PrinodeComparator> data;
     public:
+        ~AstarQueue();
         inline void push(Node* n) { data.push(std::forward_as_tuple(n, UINT_MAX)); }
         inline void push(Node* n, unsigned int p) { data.push(std::forward_as_tuple(n, p)); }
         inline Node* pop() {

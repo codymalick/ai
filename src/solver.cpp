@@ -11,6 +11,7 @@ Node::Node(Node* parent, World* val) {
 
 Node::~Node() {
     for(int i=0; i<child_count; i++) delete child[i];
+    if(child) delete[] child;
     delete val;
 }
 

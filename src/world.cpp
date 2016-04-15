@@ -58,9 +58,9 @@ World::World(const World& w) {
 
 // Destructor
 World::~World() {
-    delete left;
-    delete right;
-    delete boat;
+    delete[] left;
+    delete[] right;
+    delete[] boat;
 }
 
 int World::count(Location location, Person type) const {

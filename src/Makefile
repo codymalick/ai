@@ -7,9 +7,15 @@ all: ai_mc
 ai_mc: main.o world.o solver.o alg.o aux.o
 	$(CC) main.o world.o solver.o alg.o aux.o -o ai_mc
 
+leaktest: ltest.o world.o solver.o alg.o aux.o
+	$(CC) ltest.o world.o solver.o alg.o aux.o -o leaktest
+	
 worldtest: wtest.o world.o
 	$(CC) wtest.o world.o -o worldtest
 
+
+ltest.o: ltest.cpp
+	$(CC) ltest.cpp -c $(CFLAGS)
 
 wtest.o: wtest.cpp
 	$(CC) wtest.cpp -c $(CFLAGS)
