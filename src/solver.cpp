@@ -1,3 +1,4 @@
+#include "aux.h"
 #include "solver.h"
 #include <cassert>
 
@@ -14,17 +15,32 @@ Node::~Node() {
 }
 
 Solver::Solver(World* start, World* end) {
-    tree = new Node((Node*) NULL, start);
+    start_state = start;
     end_state = end;
+    tree = new Node((Node*) NULL, new World(*start_state));
     queue = (AlgQueue*) NULL;
     solution = NULL;
     visited = new set<signature>;
 }
 
 Solver::~Solver() {
+    delete start_state;
+    delete end_state;
     delete visited;
+    delete tree;
     if(queue) delete queue;
-    if(tree) delete tree;
+}
+
+void Solver::reset() {
+    delete tree;
+    delete visited;
+    if(queue) {
+        delete queue;
+        queue = (AlgQueue*) NULL;
+    }
+    tree = new Node((Node*) NULL, new World(*start_state));
+    visited = new set<signature>;
+    expanded = 0;
 }
 
 signature Solver::to_signature(World* w) {
@@ -37,14 +53,37 @@ signature Solver::to_signature(World* w) {
     );
 }
 
-void Solver::bfs() {
-    queue = new BfsQueue;
+int Solver::depth(Node* n) {
+    int length = 0;
+    Node* current = n;
+    while(current) {
+        current = current->parent;
+        length++;
+    }
+    return length;
+}
+
+bool Solver::solve(Algo algorithm, int depth_limit) {
+    assert(algorithm != BAD_ALG);
+    
+    switch(algorithm) {
+        case BFS:
+            queue = new BfsQueue;
+            break;
+        case DFS:
+        case IDDFS:
+            queue = new DfsQueue;
+            break;
+        case ASTAR:
+            queue = new AstarQueue;
+    }
     
     expanded = 0;
+    // if solution is start, return
     if(*(tree->val) == *end_state) {
         solution = tree;
         expanded++;
-        return;
+        return false;
     }
     
     queue->push(tree); // Add root to queue
@@ -54,16 +93,20 @@ void Solver::bfs() {
     while(true) {
         // get next node
         n = queue->pop();
-        if(!n) return; // no more nodes in queue
+        if(!n) return false; // no more nodes in queue
          
         // put into visited set
         visited->insert(to_signature(n->val));
         
-        
+        // if solution found, return
         if(*(n->val) == *end_state) {
             solution = n;
-            return;
+            return false;
         }
+        
+        if(algorithm == IDDFS && depth(n) > depth_limit)
+            return true;
+            
         // tracking number of expanded nodes
         expanded++;
         
@@ -158,7 +201,12 @@ void Solver::bfs() {
         
         // put child nodes into queue
         for(int i=0; i<n->child_count; i++)
-            queue->push(n->child[i]);
+            if(algorithm == ASTAR) {
+                queue->push(n->child[i], n->child[i]->val->heuristance(*end_state));
+                //queue->push(n->child[i], 1000);
+            } else {
+                queue->push(n->child[i]);
+            }
     }
 }
         
@@ -172,6 +220,5 @@ vector<World*> Solver::ascend() {
         v.push_back(current->val);
         current = current->parent;
     }
-    
     return v;
 }

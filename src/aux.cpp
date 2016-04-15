@@ -17,6 +17,22 @@ using std::vector;
 using std::strtok;
 using std::istreambuf_iterator;
 
+Algo alg_type(const char* s) {
+    if(!strcmp(s, "bfs"))
+        return BFS;
+    
+    if(!strcmp(s, "dfs"))
+        return DFS;
+    
+    if(!strcmp(s, "iddfs"))
+        return IDDFS;
+    
+    if(!strcmp(s, "astar"))
+        return ASTAR;
+    
+    return BAD_ALG;
+}
+
 int flag_check(int argc, char **argv)
 {
 
@@ -65,7 +81,6 @@ World* world_from_string(string s) {
         token = strtok(NULL, ",");
     }   
     
-    cout << tray[0] << ", " << tray[1] << ", " << tray[2] << ", " << tray[3] << ", " << tray[4] << endl;
     return new World(
         tray[0], // left missionary
         tray[1], // left cannibal
@@ -78,4 +93,6 @@ World* world_from_string(string s) {
 void state_vector_print(vector<World*> v) {
     for(int i=v.size()-1; i>=0; i--)
         cout << *(v[i]) << endl;
+        
+    cout << "Solution is " << v.size() << " moves." << endl;
 }

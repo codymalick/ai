@@ -39,6 +39,7 @@ class World {
         bool boat_can_move() const;
         void boat_move();
         bool fail() const;
+        int heuristance(const World&);
         
         bool operator==(const World&) const;
         friend std::ostream& operator<<(std::ostream&, const World&);

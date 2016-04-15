@@ -1,6 +1,7 @@
 #include "world.h"
 #include <iostream>
 #include <assert.h>
+#include <cstdlib>
 
 // Default constructor
 World::World(int m_left, int c_left, int m_right, int c_right, Side boat_side) {
@@ -165,6 +166,11 @@ int World::field_len(Location location) const {
         case BOAT:
             return BOAT_CAP;
     }
+}
+
+int World::heuristance(const World& w) {
+    return std::abs(count(LEFT_SHORE, NOBODY) - w.count(LEFT_SHORE, NOBODY)) +
+        std::abs(count(RIGHT_SHORE, NOBODY) - w.count(RIGHT_SHORE, NOBODY));
 }
 
 bool World::operator==(const World& w) const {

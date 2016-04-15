@@ -1,6 +1,7 @@
 #ifndef _ALG
 #define _ALG
 
+#include "aux.h"
 #include "solver.h"
 class Node; // forward declaration for circular include
 
@@ -10,10 +11,7 @@ class Node; // forward declaration for circular include
 #include <tuple>
 #include <climits>
 
-typedef std::tuple<Node*, unsigned int> prinode;
-auto node_cmp = [](prinode a, prinode b) {
-    return std::get<1>(a) > std::get<1>(b);
-};
+
 
 //Parent class for algorithm data structures
 class AlgQueue {
@@ -52,11 +50,23 @@ class DfsQueue : public AlgQueue {
             return n;
         }
 };
+typedef std::tuple<Node*, unsigned int> prinode;
+/* const auto node_cmp = [](prinode a, prinode b) {
+    return std::get<1>(a) > std::get<1>(b);
+};*/
+
+class PrinodeComparator {
+    public:
+        inline bool operator()(const prinode& a, const prinode& b) const {
+            return std::get<1>(a) > std::get<1>(b);
+        }
+};
 
 // priority queue
 class AstarQueue : public AlgQueue {
     private:
-        std::priority_queue<prinode, std::deque<prinode>, decltype(node_cmp)> data;
+        //std::priority_queue<prinode, std::deque<prinode>, decltype(node_cmp)> data;
+        std::priority_queue<prinode, std::deque<prinode>, PrinodeComparator> data;
     public:
         inline void push(Node* n) { data.push(std::forward_as_tuple(n, UINT_MAX)); }
         inline void push(Node* n, unsigned int p) { data.push(std::forward_as_tuple(n, p)); }

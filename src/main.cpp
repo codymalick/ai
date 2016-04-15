@@ -39,31 +39,42 @@ int main(int argc, char *argv[]) {
         World* w1 = world_from_string(start_string);
         World* w2 = world_from_string(goal_string);
         
-        cout << *w1 << '\n' << *w2 << endl;
-        
         cout << "Creating solver..." << endl;
         solver = new Solver(w1, w2);
     }
     
-    const char *mode = argv[3];
-    //Enum names defined by assignment requirements
-    
-    if(!strcmp(mode, "bfs")) {
-        cout << "Running Breadth-First-Search" << endl;
-        solver->bfs();
-    } else if(!strcmp(mode, "dfs")) {
-        cout << "Running Depth-First Search" << endl;
-        //dfs();
-    } else if(!strcmp(mode, "iddfs")) {
-        cout << "Running Iterative Deepening Depth-First Search" << endl;
-        //iddfs();
-    } else if(!strcmp(mode, "astar")) {
-        cout << "Running A* Search" << endl;
-        //astar();
-    } else {
-        cout << "Invalid mode" << endl;
-        cout << USAGE << endl;
-        return 1;
+    Algo mode = alg_type(argv[3]);
+    switch(mode) {
+        case BFS:
+            cout << "Running Breadth-First-Search" << endl;
+            solver->solve(BFS);
+            break;
+            
+        case DFS:
+            cout << "Running Depth-First Search" << endl;
+            solver->solve(DFS);
+            break;
+            
+        case IDDFS: {
+            cout << "Running Iterative Deepening Depth-First Search" << endl;
+            int depth = 1;
+            // if solver does not return true, i.e. yes run again, break
+            while(solver->solve(IDDFS, depth)) {
+                depth *= 2;
+                solver->reset();
+            }
+            break;
+        }
+            
+        case ASTAR:   
+            cout << "Running A* Search" << endl;
+            solver->solve(ASTAR);
+            break;
+        
+        default:
+            cout << "Invalid mode" << endl;
+            cout << USAGE << endl;
+            return 1;
     }
     
     if(solver->is_solved()) {
