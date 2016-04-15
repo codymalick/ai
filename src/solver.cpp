@@ -140,7 +140,15 @@ void Solver::bfs() {
             succ.push_back(new Node(n, temp));
         }
         
-        // put successor nodes into tree
+        // put successor nodes into tree if not failure or already seen
+        for(vector<Node*>::iterator it = succ.begin(); it != succ.end(); )
+            if((*it)->val->fail() || visited->find(to_signature((*it)->val)) != visited->end()) {
+                delete *it;
+                it = succ.erase(it);
+            } else {
+                ++it;
+            }
+            
         n->child_count = succ.size();
         n->child = new Node*[n->child_count];
         for(int i=0; i<n->child_count; i++)
@@ -148,10 +156,9 @@ void Solver::bfs() {
         
         succ.clear();
         
-        // put child nodes into queue if not failure state or already seen
+        // put child nodes into queue
         for(int i=0; i<n->child_count; i++)
-            if(!(n->child[i]->val->fail()) && (visited->find(to_signature(n->child[i]->val)) == visited->end()))
-                queue->push(n->child[i]);
+            queue->push(n->child[i]);
     }
 }
         
