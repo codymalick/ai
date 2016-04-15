@@ -174,12 +174,12 @@ int World::heuristance(const World& w) {
 }
 
 bool World::operator==(const World& w) const {
-    return ( // Right shore not included for efficiency; mathematically irrelevant
+    return ( // Boat not included for efficiency; mathematically irrelevant
         (count(LEFT_SHORE, MISSIONARY) == w.count(LEFT_SHORE, MISSIONARY))  &&
-        (count(BOAT, MISSIONARY)       == w.count(BOAT, MISSIONARY))        &&
+        (count(RIGHT_SHORE, MISSIONARY)       == w.count(RIGHT_SHORE, MISSIONARY))        &&
         
         (count(LEFT_SHORE, CANNIBAL)   == w.count(LEFT_SHORE, CANNIBAL))    &&
-        (count(BOAT, CANNIBAL)         == w.count(BOAT, CANNIBAL))
+        (count(RIGHT_SHORE, CANNIBAL)         == w.count(RIGHT_SHORE, CANNIBAL))
     );
 }
     
