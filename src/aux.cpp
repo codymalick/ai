@@ -4,7 +4,9 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>
+#include <vector>
+#include <cstring>
+
 
 using std::cout;
 using std::endl;
@@ -12,6 +14,7 @@ using std::string;
 using std::ifstream;
 using std::stoi;
 using std::vector;
+using std::strtok;
 using std::istreambuf_iterator;
 
 int flag_check(int argc, char **argv)
@@ -51,12 +54,24 @@ string read_file(char **filename) {
 World* world_from_string(string s) {
     // file arrangement is static, so we can expect things to be deterministic
     // in location. Manually taking line 1[1-3] and line2[1-3] works
+
+    char *input = (char*) s.c_str();
+    *strchr(input, '\n') = ',';
+    
+    char *token = strtok(input, ",");
+    int tray[5];
+    for(int i=0; i<5; i++) {
+        tray[i] = atoi(token);
+        token = strtok(NULL, ",");
+    }   
+    
+    cout << tray[0] << ", " << tray[1] << ", " << tray[2] << ", " << tray[3] << ", " << tray[4] << endl;
     return new World(
-        s[0]-'0', // left missionary
-        s[2]-'0', // left cannibal
-        s[6]-'0', // right missionary
-        s[8]-'0', // right cannibal
-        (s[4]-'0' == 1)?LEFT_SIDE:RIGHT_SIDE
+        tray[0], // left missionary
+        tray[1], // left cannibal
+        tray[3], // right missionary
+        tray[4], // right cannibal
+        (tray[2] == 1)?LEFT_SIDE:RIGHT_SIDE
     );
 }
 

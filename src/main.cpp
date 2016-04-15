@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
         World* w1 = world_from_string(start_string);
         World* w2 = world_from_string(goal_string);
         
+        cout << *w1 << '\n' << *w2 << endl;
+        
         cout << "Creating solver..." << endl;
         solver = new Solver(w1, w2);
     }
