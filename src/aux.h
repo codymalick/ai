@@ -24,6 +24,6 @@ Algo alg_type(const char*);
 int flag_check(int, char **);
 string read_file(char **);
 World* world_from_string(string);
-void state_vector_print(vector<World*>);
+void state_vector_print(vector<World*>, char**);
 
 #endif

@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     
     if(solver->is_solved()) {
         cout << "Solution found:" << endl;
-        state_vector_print(solver->ascend());
+        state_vector_print(solver->ascend(), &argv[4]);
     } else {
         cout << "No solutions found :(" << endl;
     }

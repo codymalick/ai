@@ -12,6 +12,7 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::ifstream;
+using std::ofstream;
 using std::stoi;
 using std::vector;
 using std::strtok;
@@ -90,9 +91,13 @@ World* world_from_string(string s) {
     );
 }
 
-void state_vector_print(vector<World*> v) {
-    for(int i=v.size()-1; i>=0; i--)
+void state_vector_print(vector<World*> v, char** filename) {
+    ofstream f(*filename);
+    for(int i=v.size()-1; i>=0; i--) {
         cout << *(v[i]) << endl;
-        
+        f << *(v[i]) << endl;
+    }
+    f.close();
+    
     cout << "Solution is " << v.size() << " moves." << endl;
 }
