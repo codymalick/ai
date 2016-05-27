@@ -37,14 +37,15 @@ def vector_create(vocab):
 		feature_vector.append(0)
 	return feature_vector
 
-def output_preprocessed_set(vocab, training, file_name):
+def output_preprocessed_set(vocab, data, file_name, is_training):
+	feature_vectors = []
 	f = open(file_name, 'w')
 	for value in vocab:
 		f.write(value[0] + ',')
 
 	f.write('\n')
 
-	for sentence in training:
+	for sentence in data:
 		words = sentence[0].split(' ')
 		#create the training set output
 		output = vector_create(vocab)
@@ -54,8 +55,16 @@ def output_preprocessed_set(vocab, training, file_name):
 				if vocab[i][0] == word:
 					output[i] = 1
 					#print(word)
+
+		#If it's been classified, classify it in the output
+		if is_training and len(sentence) == 2 and sentence[1] == '1':
+			output[-1] = 1
+		
+		feature_vectors.append(output)
 		f.write("%s\n" % output)
 	f.close()
+
+	return feature_vectors
 
 def main():
 	#Read in the training data
@@ -63,12 +72,11 @@ def main():
 	data = parse_data(train)
 	#Create the vocabulary from the training set
 	vocab = create_vocab(data)
-	output_preprocessed_set(vocab, data, "preprocessed_train.txt")
+	train_vectors = output_preprocessed_set(vocab, data, "preprocessed_train.txt", True)
 
 	#Read in the test data
 	test = open("test_text.txt").read().splitlines()
 	t_data = parse_data(test)
-
-	output_preprocessed_set(vocab, t_data, "preprocessed_test.txt")
+	test_vectors = output_preprocessed_set(vocab, t_data, "preprocessed_test.txt", False)
 
 main()
