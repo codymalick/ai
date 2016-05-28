@@ -4,7 +4,6 @@ def parse_data(data):
 	parsed_data = []
 	for line in data:
 		parsed = line.translate(None, '()".\'!?+-=\\:/_;%&$')
-		#parsed = parsed.translate(None, ')')
 		parsed = parsed.split(',')
 		parsed_data.append(parsed)
 	return parsed_data
@@ -16,16 +15,27 @@ def create_vocab(data):
 		for word in words:
 			#hanlde base case
 			if not vocab:
-				vocab.append([word,1])
+				if len(sentence) == 2 and sentence[1] == '1':
+					# Vocab[word, count, positive satire count]
+					vocab.append([word,1,1])
+					break
+				else:
+					vocab.append([word,1,0])
+					break
 			
 			added = False
 			for value in vocab:
 				if word in value:
 					value[1] += 1
+					if len(sentence) == 2 and sentence[1] == '1':
+						value[2] += 1
 					added = True
 
 			if added == False:
-				vocab.append([word,1])
+				if len(sentence) == 2 and sentence[1] == '1':
+					vocab.append([word,1,1])
+				else:
+					vocab.append([word,1,0])
 
 	vocab.sort()
 	return vocab
@@ -66,6 +76,77 @@ def output_preprocessed_set(vocab, data, file_name, is_training):
 
 	return feature_vectors
 
+# Trains the classifiers on the given set of values
+def training(vocab, vectors):
+	probabilities = []
+
+	for i in range(0, len(vocab)):
+		# Add positive probability and negative probability
+		word_p = [float(vocab[i][2])/float(vocab[i][1]), float(vocab[i][1]-vocab[i][2])/float(vocab[i][1])]
+		probabilities.append(word_p)
+	
+	total_positive = 0
+	total_negative = 0
+	for sentence in vectors:
+		if sentence[-1] == 1:
+			total_positive += 1
+		else:
+			total_negative += 1
+
+	probabilities.append(total_positive)
+	probabilities.append(total_negative)
+#	print(probabilities)
+	return probabilities
+
+def classify(probabilities, vectors):
+	#Get total counts of positive and negative classifications
+	result = []
+	total_positive = probabilities[-2]
+	total_negative = probabilities[-1]
+	for i in range(0, len(vectors)):
+		positive_p = 1
+		negative_p = 1
+		# If this sentence is classified as satirical
+		# Iterate over every word in the array
+		for j in range(0, len(vectors[i])-1):
+			# Check over each word, see if it is used
+			if vectors[i][j] == 1:
+				# If it is used, then calculate the probability, count over the total positive count
+				positive_p *= probabilities[j][0]
+			else:
+				# Else we want to add the probability to the negative column
+				negative_p *= probabilities[j][1]
+
+		# Now multiply combined probabilities times the total number of positive classifications, and negative classifications
+		positive_p *= float(total_positive)/float(total_positive + total_negative)
+		negative_p *= float(total_negative)/float(total_positive + total_negative)
+
+		#round to readable format
+		if(positive_p > negative_p):
+			result.append(1)
+		else:
+			result.append(0)
+	return result
+		
+def real_count(vectors, calculated):
+	correct = 0
+	incorrect = 0
+	answers = []
+	for i in range(0, len(vectors)):
+		if vectors[i][-1] == 1:
+			answers.append(1)
+		else:
+			answers.append(0)
+	
+	for i in range(0, len(calculated)):
+		if calculated[i] == answers[i]:
+			correct += 1
+		else:
+			incorrect += 1
+	print("Correct | Incorrect")
+	print(correct, incorrect)
+	print(float(correct)/float(incorrect+correct))
+
 def main():
 	#Read in the training data
 	train = open("training_text.txt").read().splitlines()
@@ -78,5 +159,17 @@ def main():
 	test = open("test_text.txt").read().splitlines()
 	t_data = parse_data(test)
 	test_vectors = output_preprocessed_set(vocab, t_data, "preprocessed_test.txt", False)
+
+	classifier = training(vocab, train_vectors)
+	
+	train_results = classify(classifier, train_vectors)
+	
+	print("Training")
+	real_count(train_vectors, train_results)
+
+	test_results = classify(classifier, test_vectors)
+#	print(test_results)
+	print("Test")
+	real_count(test_vectors, test_results)
 
 main()
