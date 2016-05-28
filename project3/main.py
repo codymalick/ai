@@ -1,5 +1,3 @@
-
-
 def parse_data(data):
 	parsed_data = []
 	for line in data:
@@ -13,10 +11,10 @@ def create_vocab(data):
 	for sentence in data:
 		words = sentence[0].split(' ')	
 		for word in words:
-			#hanlde base case
+			# Hanlde base case
 			if not vocab:
 				if len(sentence) == 2 and sentence[1] == '1':
-					# Vocab[word, count, positive satire count]
+					# Vocab[word, count, positive sarcasm count]
 					vocab.append([word,1,1])
 					break
 				else:
@@ -40,13 +38,15 @@ def create_vocab(data):
 	vocab.sort()
 	return vocab
 
+# Creates an empty feature vector based off of vocabulary
 def vector_create(vocab):
 	feature_vector = []
-	#Feature vector is the length of vocab+1, where length + 1 is the classification
+	# Feature vector is the length of vocab+1, where length + 1 is the classification
 	for i in range(0, len(vocab)+1):
 		feature_vector.append(0)
 	return feature_vector
 
+# Outputs the preprocessed set
 def output_preprocessed_set(vocab, data, file_name, is_training):
 	feature_vectors = []
 	f = open(file_name, 'w')
@@ -57,16 +57,14 @@ def output_preprocessed_set(vocab, data, file_name, is_training):
 
 	for sentence in data:
 		words = sentence[0].split(' ')
-		#create the training set output
+		# Create the training set output
 		output = vector_create(vocab)
 		for word in words:
 			for i in range(0, len(output)-1):
-				#print(word, vocab[i][0])
 				if vocab[i][0] == word:
 					output[i] = 1
-					#print(word)
 
-		#If it's been classified, classify it in the output
+		# If it's been classified, classify it in the output
 		if is_training and len(sentence) == 2 and sentence[1] == '1':
 			output[-1] = 1
 		
@@ -95,11 +93,11 @@ def training(vocab, vectors):
 
 	probabilities.append(total_positive)
 	probabilities.append(total_negative)
-#	print(probabilities)
+	
 	return probabilities
 
 def classify(probabilities, vectors):
-	#Get total counts of positive and negative classifications
+	# Get total counts of positive and negative classifications
 	result = []
 	total_positive = probabilities[-2]
 	total_negative = probabilities[-1]
@@ -121,13 +119,14 @@ def classify(probabilities, vectors):
 		positive_p *= float(total_positive)/float(total_positive + total_negative)
 		negative_p *= float(total_negative)/float(total_positive + total_negative)
 
-		#round to readable format
+		# Round to readable format
 		if(positive_p > negative_p):
 			result.append(1)
 		else:
 			result.append(0)
 	return result
-		
+
+# Counts results against actual sarcasm		
 def real_count(vectors, calculated):
 	correct = 0
 	incorrect = 0
@@ -148,27 +147,32 @@ def real_count(vectors, calculated):
 	print(float(correct)/float(incorrect+correct))
 
 def main():
-	#Read in the training data
+	# Read in the training data
 	train = open("training_text.txt").read().splitlines()
 	data = parse_data(train)
-	#Create the vocabulary from the training set
+	# Create the vocabulary from the training set
 	vocab = create_vocab(data)
 	train_vectors = output_preprocessed_set(vocab, data, "preprocessed_train.txt", True)
 
-	#Read in the test data
+	# Read in the test data
 	test = open("test_text.txt").read().splitlines()
 	t_data = parse_data(test)
 	test_vectors = output_preprocessed_set(vocab, t_data, "preprocessed_test.txt", False)
 
+	# Train the classifier
 	classifier = training(vocab, train_vectors)
-	
+
+	# Training data results
 	train_results = classify(classifier, train_vectors)
 	
+	# Print results
 	print("Training")
 	real_count(train_vectors, train_results)
 
+	# Test data results
 	test_results = classify(classifier, test_vectors)
-#	print(test_results)
+	
+	# Print results
 	print("Test")
 	real_count(test_vectors, test_results)
 
