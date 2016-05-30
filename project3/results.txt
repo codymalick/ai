@@ -1,0 +1,8 @@
+Training : "training_text.txt" - Testing: "training_text.txt"
+Correct: 180
+Incorrect: 1
+Accuracy: 0.994475138122
+Training: File "training_text.txt" - Testing: "test_text.txt"
+Correct: 153
+Incorrect: 28
+Accuracy: 0.845303867403

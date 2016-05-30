@@ -127,7 +127,7 @@ def classify(probabilities, vectors):
 	return result
 
 # Counts results against actual sarcasm		
-def real_count(vectors, calculated):
+def real_count(vectors, calculated, output_file):
 	correct = 0
 	incorrect = 0
 	answers = []
@@ -142,11 +142,12 @@ def real_count(vectors, calculated):
 			correct += 1
 		else:
 			incorrect += 1
-	print("Correct | Incorrect")
-	print(correct, incorrect)
-	print(float(correct)/float(incorrect+correct))
+	output_file.write("Correct: " + str(correct) + "\n")
+	output_file.write("Incorrect: " + str(incorrect) + "\n")
+	output_file.write("Accuracy: " + str(float(correct)/float(incorrect+correct)) + "\n" )
 
 def main():
+	output_file = open('results.txt', 'w')
 	# Read in the training data
 	train = open("training_text.txt").read().splitlines()
 	data = parse_data(train)
@@ -166,14 +167,16 @@ def main():
 	train_results = classify(classifier, train_vectors)
 	
 	# Print results
-	print("Training")
-	real_count(train_vectors, train_results)
+
+	output_file.write("Training : \"training_text.txt\" - Testing: \"training_text.txt\"\n")
+	real_count(train_vectors, train_results, output_file)
 
 	# Test data results
 	test_results = classify(classifier, test_vectors)
 	
 	# Print results
-	print("Test")
-	real_count(test_vectors, test_results)
+	output_file.write("Training: File \"training_text.txt\" - Testing: \"test_text.txt\"\n")
+	real_count(test_vectors, test_results, output_file)
+	output_file.close()
 
 main()
