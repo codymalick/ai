@@ -1,5 +1,8 @@
+#!/usr/bin/env python2
+
 # CS 331, Programming Assignment 3
 # Group: Cody Malick, Andrew Tolvstad
+
 
 def parse_data(data):
 	parsed_data = []
